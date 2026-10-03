@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แบบทดสอบออนไลน์ เรื่อง การจำแนกรูปสี่เหลี่ยม</title>
+<style>
+:root{--navy:#173b67;--blue:#2f78b7;--light:#eef7ff;--paper:#fff;--ink:#17202a;--ok:#e9f7ef;--bad:#fdecec}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans Thai","Tahoma",sans-serif;background:linear-gradient(180deg,#eaf5ff,#f8fbff);color:var(--ink)}
+header{background:var(--navy);color:white;padding:24px 16px;text-align:center}
+header h1{margin:0 0 6px;font-size:clamp(24px,5vw,38px)}
+header p{margin:0;opacity:.9}
+main{max-width:900px;margin:24px auto;padding:0 14px 40px}
+.card{background:var(--paper);border-radius:18px;padding:20px;margin:16px 0;box-shadow:0 5px 20px #173b6718;border:1px solid #dbe9f5}
+.intro{font-size:18px;line-height:1.7}
+.qno{display:inline-block;background:var(--navy);color:#fff;border-radius:999px;padding:5px 12px;margin-right:8px}
+.question{font-size:20px;font-weight:700;line-height:1.55;margin-bottom:14px}
+.choice{display:block;border:2px solid #dce8f3;border-radius:12px;padding:12px 14px;margin:9px 0;cursor:pointer;transition:.15s;background:#fff}
+.choice:hover{border-color:var(--blue);background:var(--light)}
+.choice input{margin-right:10px;transform:scale(1.15)}
+button{border:0;border-radius:14px;padding:14px 22px;font-size:19px;font-weight:700;cursor:pointer}
+#submit{width:100%;background:var(--navy);color:#fff}
+#submit:hover{filter:brightness(1.1)}
+#result{display:none;text-align:center}
+.score{font-size:38px;font-weight:800;color:var(--navy)}
+.pass{background:var(--ok)} .fail{background:var(--bad)}
+.feedback{margin-top:10px;padding:10px 12px;border-radius:10px;display:none;line-height:1.55}
+.correct{background:var(--ok);border-left:5px solid #27864a}
+.wrong{background:var(--bad);border-left:5px solid #c0392b}
+.small{font-size:14px;color:#52606d}
+footer{text-align:center;color:#607080;padding:18px}
+@media print{#submit{display:none}body{background:white}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>แบบทดสอบออนไลน์ เรื่อง “การจำแนกรูปสี่เหลี่ยม”</h1>
+  <p>กิจกรรมประกอบแผนการจัดการเรียนรู้แบบ 5E</p>
+</header>
+<main>
+<section class="card intro">
+  <b>คำชี้แจง:</b> แบบทดสอบมี 10 ข้อ ข้อละ 1 คะแนน ให้เลือกคำตอบที่ถูกต้องที่สุดเพียงข้อเดียว
+  แล้วกด <b>ส่งคำตอบและดูคะแนน</b> เมื่อทำครบทุกข้อ<br>
+  <span class="small">เกณฑ์ผ่าน: ได้คะแนนอย่างน้อย 70% (7 จาก 10 คะแนน)</span>
+</section>
+
+<form id="quiz"></form>
+
+<section id="result" class="card">
+  <div id="score" class="score"></div>
+  <h2 id="status"></h2>
+  <p id="message"></p>
+  <button type="button" onclick="location.reload()" style="background:#2f78b7;color:#fff">ทำแบบทดสอบอีกครั้ง</button>
+</section>
+<button id="submit" type="button">ส่งคำตอบและดูคะแนน</button>
+</main>
+<footer>GDP5008 • แผนการจัดการเรียนรู้แบบ 5E • เรื่อง รูปสี่เหลี่ยม</footer>
+
+<script>
+const questions = [
+ {q:"รูปสี่เหลี่ยมชนิดใดมีด้านทั้ง 4 ด้านยาวเท่ากัน และมุมทั้ง 4 มุมเป็นมุมฉาก?",
+  a:["สี่เหลี่ยมจัตุรัส","สี่เหลี่ยมผืนผ้า","สี่เหลี่ยมคางหมู","สี่เหลี่ยมรูปว่าว"],c:0,
+  why:"สี่เหลี่ยมจัตุรัสมีด้านทั้ง 4 ยาวเท่ากัน และมีมุมฉากทั้ง 4 มุม"},
+ {q:"รูปสี่เหลี่ยมชนิดใดมีด้านตรงข้ามยาวเท่ากันและขนานกัน โดยมุมทั้ง 4 เป็นมุมฉาก?",
+  a:["สี่เหลี่ยมขนมเปียกปูน","สี่เหลี่ยมผืนผ้า","สี่เหลี่ยมรูปว่าว","สี่เหลี่ยมคางหมู"],c:1,
+  why:"สี่เหลี่ยมผืนผ้ามีด้านตรงข้ามขนานและยาวเท่ากัน และมีมุมฉาก 4 มุม"},
+ {q:"รูปสี่เหลี่ยมชนิดใดมีด้านตรงข้ามขนานกัน 2 คู่ และด้านตรงข้ามยาวเท่ากัน แต่ไม่จำเป็นต้องมีมุมฉาก?",
+  a:["สี่เหลี่ยมด้านขนาน","สี่เหลี่ยมคางหมู","สี่เหลี่ยมรูปว่าว","สี่เหลี่ยมจัตุรัส"],c:0,
+  why:"ลักษณะดังกล่าวเป็นสมบัติของสี่เหลี่ยมด้านขนาน"},
+ {q:"รูปสี่เหลี่ยมชนิดใดมีด้านทั้ง 4 ด้านยาวเท่ากัน ด้านตรงข้ามขนานกัน แต่ไม่จำเป็นต้องมีมุมฉาก?",
+  a:["สี่เหลี่ยมผืนผ้า","สี่เหลี่ยมคางหมู","สี่เหลี่ยมขนมเปียกปูน","สี่เหลี่ยมรูปว่าว"],c:2,
+  why:"สี่เหลี่ยมขนมเปียกปูนมีด้านทั้ง 4 ยาวเท่ากัน และด้านตรงข้ามขนานกัน"},
+ {q:"รูปสี่เหลี่ยมชนิดใดมีด้านขนานกันเพียง 1 คู่ ตามนิยามที่ใช้ในแบบทดสอบนี้?",
+  a:["สี่เหลี่ยมคางหมู","สี่เหลี่ยมจัตุรัส","สี่เหลี่ยมด้านขนาน","สี่เหลี่ยมผืนผ้า"],c:0,
+  why:"ในแบบทดสอบนี้ใช้เกณฑ์ว่าสี่เหลี่ยมคางหมูมีด้านขนานกันเพียง 1 คู่"},
+ {q:"รูปสี่เหลี่ยมชนิดใดมีด้านที่อยู่ติดกันยาวเท่ากันเป็น 2 คู่?",
+  a:["สี่เหลี่ยมรูปว่าว","สี่เหลี่ยมผืนผ้า","สี่เหลี่ยมด้านขนาน","สี่เหลี่ยมคางหมู"],c:0,
+  why:"สี่เหลี่ยมรูปว่าวมีด้านประชิดยาวเท่ากันเป็น 2 คู่"},
+ {q:"ข้อใดเป็นสิ่งของในชีวิตประจำวันที่มักมีหน้าตัดหรือพื้นผิวเป็นรูปสี่เหลี่ยมผืนผ้า?",
+  a:["หน้าหนังสือ","เหรียญกลม","ลูกฟุตบอล","กรวยจราจร"],c:0,
+  why:"หน้าหนังสือโดยทั่วไปมีลักษณะเป็นรูปสี่เหลี่ยมผืนผ้า"},
+ {q:"ถ้ารูปสี่เหลี่ยมหนึ่งมีด้านทั้ง 4 ด้านยาวเท่ากัน และตรวจพบว่ามุมทั้ง 4 เป็นมุมฉาก ควรจำแนกเป็นรูปใด?",
+  a:["สี่เหลี่ยมจัตุรัส","สี่เหลี่ยมคางหมู","สี่เหลี่ยมรูปว่าว","สี่เหลี่ยมด้านขนาน"],c:0,
+  why:"เงื่อนไขด้านเท่ากัน 4 ด้านร่วมกับมุมฉาก 4 มุมระบุสี่เหลี่ยมจัตุรัสได้ชัดเจน"},
+ {q:"เครื่องมือใดเหมาะที่สุดสำหรับตรวจสอบว่ามุมของรูปสี่เหลี่ยมมีขนาด 90 องศาหรือไม่?",
+  a:["โพรแทรกเตอร์","ไม้เมตรอย่างเดียว","เครื่องชั่ง","นาฬิกาจับเวลา"],c:0,
+  why:"โพรแทรกเตอร์ใช้วัดขนาดของมุม จึงเหมาะสำหรับตรวจสอบมุม 90 องศา"},
+ {q:"เมื่อต้องจำแนกรูปสี่เหลี่ยม วิธีใดให้เหตุผลทางคณิตศาสตร์ได้เหมาะสมที่สุด?",
+  a:["ดูเฉพาะสีของรูป","ดูเฉพาะขนาดว่าใหญ่หรือเล็ก","พิจารณาความยาวด้าน มุม และความขนานของด้าน","เลือกจากความสวยงามของรูป"],c:2,
+  why:"การจำแนกรูปสี่เหลี่ยมควรอาศัยสมบัติทางเรขาคณิต เช่น ด้าน มุม และความขนาน"}
+];
+
+const form=document.getElementById("quiz");
+questions.forEach((x,i)=>{
+ const sec=document.createElement("section"); sec.className="card"; sec.id="q"+i;
+ sec.innerHTML=`<div class="question"><span class="qno">ข้อ ${i+1}</span>${x.q}</div>`+
+ x.a.map((v,j)=>`<label class="choice"><input type="radio" name="q${i}" value="${j}"> ${String.fromCharCode(65+j)}. ${v}</label>`).join("")+
+ `<div class="feedback" id="f${i}"></div>`;
+ form.appendChild(sec);
+});
+
+document.getElementById("submit").onclick=()=>{
+ let score=0, answered=0;
+ questions.forEach((x,i)=>{
+   const sel=document.querySelector(`input[name="q${i}"]:checked`);
+   const fb=document.getElementById("f"+i); fb.style.display="block";
+   if(!sel){fb.className="feedback wrong";fb.textContent="ยังไม่ได้ตอบข้อนี้ — คำตอบที่ถูกคือ "+x.a[x.c]+" เพราะ "+x.why;return}
+   answered++;
+   const val=Number(sel.value);
+   if(val===x.c){score++;fb.className="feedback correct";fb.textContent="ตอบถูก — "+x.why}
+   else{fb.className="feedback wrong";fb.textContent="ตอบยังไม่ถูก — คำตอบที่ถูกคือ "+x.a[x.c]+" เพราะ "+x.why}
+ });
+ if(answered<questions.length && !confirm(`ยังตอบไม่ครบ ${questions.length-answered} ข้อ ต้องการตรวจคะแนนตอนนี้หรือไม่?`)) return;
+ const pct=Math.round(score/questions.length*100), pass=pct>=70;
+ const result=document.getElementById("result");
+ result.style.display="block"; result.className="card "+(pass?"pass":"fail");
+ document.getElementById("score").textContent=`${score} / ${questions.length} คะแนน (${pct}%)`;
+ document.getElementById("status").textContent=pass?"ผ่านเกณฑ์ 70%":"ยังไม่ผ่านเกณฑ์ 70%";
+ document.getElementById("message").textContent=pass?"ทำได้ดี สามารถทบทวนคำอธิบายรายข้อด้านบนได้":"ควรทบทวนสมบัติของรูปสี่เหลี่ยมทั้ง 6 ชนิด แล้วลองทำอีกครั้ง";
+ result.scrollIntoView({behavior:"smooth"});
+};
+</script>
+</body>
+</html>
